@@ -1,0 +1,1204 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Passagem de Turno • Acesso por Matrícula</title>
+  
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#2aa3ff" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            display: ['Inter', 'ui-sans-serif', 'system-ui', 'Segoe UI', 'Roboto'],
+          },
+          colors: {
+            brand: {
+              50: '#eef9ff',
+              100: '#d9f0ff',
+              200: '#b8e4ff',
+              300: '#8ad3ff',
+              400: '#58beff',
+              500: '#2aa3ff',
+              600: '#1587e5',
+              700: '#0d6fbe',
+              800: '#0f5d9b',
+              900: '#124f80',
+            },
+            ink: '#0f172a'
+          },
+          boxShadow: {
+            soft: '0 10px 30px -10px rgba(2, 12, 27, .15)',
+          },
+        }
+      }
+    }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    .bg-animated {
+      background: radial-gradient(1200px 600px at 10% -10%, rgba(255,255,255,.35), transparent 60%),
+                  radial-gradient(1100px 700px at 110% 10%, rgba(255,255,255,.25), transparent 60%),
+                  linear-gradient(135deg, #101828 0%, #0f5d9b 50%, #0d6fbe 100%);
+    }
+    .glass {
+      background: rgba(255,255,255,0.08);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.12);
+    }
+    .scroll-smooth { scroll-behavior: smooth; }
+  </style>
+</head>
+<body class="min-h-screen bg-animated text-white font-display scroll-smooth">
+  <div id="app" class="min-h-screen flex flex-col">
+    <header id="header" class="w-full sticky top-0 z-40">
+      <div class="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div id="userChip" class="hidden items-center gap-3">
+            <div id="chipAvatar" class="w-10 h-10 rounded-full overflow-hidden ring-2 ring-white/20"></div>
+            <div>
+              <p id="chipName" class="font-semibold leading-tight"></p>
+              <p id="chipRole" class="text-white/70 text-sm leading-tight"></p>
+            </div>
+          </div>
+        </div>
+        <div class="flex items-center gap-3">
+          
+        </div>
+      </div>
+    </header>
+
+    <main class="flex-1">
+      <section id="viewLogin" class="max-w-xl mx-auto px-4 pt-16 pb-24">
+        <div class="glass rounded-2xl p-6 sm:p-8 shadow-soft">
+          <div class="mb-6">
+            <h1 class="text-2xl sm:text-3xl font-extrabold">Acesse com sua matrícula</h1>
+            <p class="text-white/80 mt-2">Digite sua matrícula para entrar.</p>
+          </div>
+          <div class="space-y-4">
+            <label class="block">
+              <span class="block text-white/80 mb-2">Coloque sua matrícula</span>
+              <input id="matriculaInput" inputmode="numeric" placeholder="Sua matrícula" class="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-brand-400" />
+            </label>
+            <button id="btnEntrar" class="w-full py-3 rounded-xl bg-brand-500 hover:bg-brand-400 active:bg-brand-600 transition font-semibold shadow-soft">Entrar</button>
+            <p id="loginErro" class="hidden text-rose-300 text-sm mt-2">Matrícula não encontrada. Confira e tente novamente.</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="viewHome" class="hidden max-w-5xl mx-auto px-4 pt-10 pb-20">
+        <div class="grid md:grid-cols-3 gap-6">
+          <div class="md:col-span-2 glass rounded-2xl p-6 shadow-soft">
+            <h2 class="text-2xl font-extrabold">Bem-vindo(a)</h2>
+            <p class="text-white/80 mt-2">Escolha o que deseja fazer.</p>
+
+            <div class="mt-6 grid gap-4 sm:grid-cols-2">
+              <button id="goTurno" class="w-full text-left p-5 rounded-2xl bg-white/10 hover:bg-white/20 transition shadow-soft">
+                <div class="flex items-start gap-4">
+                  <div class="w-11 h-11 rounded-xl bg-brand-500/20 flex items-center justify-center">
+                    <span class="text-2xl">📝</span>
+                  </div>
+                  <div>
+                    <p class="text-lg font-semibold">Passagem de Turno</p>
+                    <p class="text-white/80">Cadastre e visualize as passagens.</p>
+                  </div>
+                </div>
+              </button>
+
+              <button id="goPerfil" class="w-full text-left p-5 rounded-2xl bg-white/10 hover:bg-white/20 transition shadow-soft">
+                <div class="flex items-start gap-4">
+                  <div class="w-11 h-11 rounded-xl bg-brand-500/20 flex items-center justify-center">
+                    <span class="text-2xl">👤</span>
+                  </div>
+                  <div>
+                    <p class="text-lg font-semibold">Perfil</p>
+                    <p class="text-white/80">Atualize sua foto, posição e turno.</p>
+                  </div>
+                </div>
+              </button>
+            </div>
+          </div>
+
+          <div class="glass rounded-2xl p-6 shadow-soft">
+            <h3 class="text-xl font-bold">Seu resumo</h3>
+            <div class="mt-4 flex items-center gap-4">
+              <div id="homeAvatar" class="w-16 h-16 rounded-full overflow-hidden ring-2 ring-white/20"></div>
+              <div>
+                <p id="homeName" class="font-semibold"></p>
+                <p id="homeRole" class="text-white/70 text-sm"></p>
+                <p id="homeMatricula" class="text-white/60 text-sm"></p>
+              </div>
+            </div>
+            <button id="btnSairHome" class="mt-6 w-full py-2.5 rounded-xl bg-white/10 hover:bg-white/20 transition">Sair</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="viewPerfil" class="hidden max-w-6xl mx-auto px-4 pt-10 pb-24">
+        <div class="glass rounded-2xl p-6 sm:p-8 shadow-soft">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h2 id="perfilNome" class="text-2xl sm:text-3xl font-extrabold"></h2>
+              <p id="perfilMatricula" class="text-white/80 mt-1"></p>
+            </div>
+            <button id="voltarDoPerfil" class="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 transition">Voltar</button>
+          </div>
+
+          <div class="mt-8 grid lg:grid-cols-3 gap-8">
+            <div>
+              <div id="perfilAvatar" class="w-44 h-44 rounded-full overflow-hidden ring-2 ring-white/20 mx-auto lg:mx-0"></div>
+              <div class="mt-4 flex items-center justify-center lg:justify-start gap-3">
+                <label class="px-4 py-2 rounded-xl bg-brand-500 hover:bg-brand-400 transition font-semibold cursor-pointer">
+                  <input id="inputFoto" type="file" accept="image/*" class="hidden" />
+                  Enviar nova foto
+                </label>
+                <button id="removerFoto" class="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 transition">Remover</button>
+              </div>
+            </div>
+
+            <div class="lg:col-span-2">
+              <div class="grid sm:grid-cols-2 gap-6">
+                <div>
+                  <label class="block text-white/80 mb-2">Posição</label>
+                  <select id="perfilRole" class="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 focus:outline-none focus:ring-2 focus:ring-brand-400">
+                    <option>Encarregado</option>
+                    <option>Supervisor</option>
+                    <option>Técnico de Segurança</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-white/80 mb-2">Turno</label>
+                  <select id="perfilTurno" class="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 focus:outline-none focus:ring-2 focus:ring-brand-400">
+                    <option>ADM</option>
+                    <option>Letra A</option>
+                    <option>Letra B</option>
+                    <option>Letra C</option>
+                    <option>Letra D</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="mt-6 flex items-center gap-3">
+                <button id="salvarPerfil" class="px-5 py-3 rounded-xl bg-brand-500 hover:bg-brand-400 transition font-semibold shadow-soft">Salvar</button>
+                <span id="perfilSaved" class="hidden text-emerald-300">Alterações salvas!</span>
+              </div>
+
+              <div class="mt-6 text-white/70 text-sm">
+                Observação: por enquanto, este app salva os dados no seu dispositivo.
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="viewTurno" class="hidden max-w-6xl mx-auto px-4 pt-10 pb-24">
+        <div class="flex items-center justify-between gap-4">
+          <div>
+            <h2 class="text-2xl sm:text-3xl font-extrabold">Passagem de Turno</h2>
+            <p class="text-white/80">Cadastre e visualize as passagens.</p>
+          </div>
+          <div class="flex items-center gap-3">
+            <button id="btnAddPassagem" class="px-4 py-2 rounded-xl bg-brand-500 hover:bg-brand-400 transition font-semibold shadow-soft">Adicionar Passagem</button>
+            <button id="voltarDoTurno" class="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 transition">Voltar</button>
+          </div>
+        </div>
+
+        <div id="vitrineTurnos" class="mt-6 grid gap-5 md:grid-cols-2"></div>
+
+        <div id="history" class="mt-8 pt-8 border-t border-white/10">
+          <h3 class="text-2xl font-extrabold mb-4">Histórico de Publicações</h3>
+          <div id="historyList" class="space-y-4"></div>
+        </div>
+
+        <div id="modalPassagem" class="hidden fixed inset-0 z-50">
+          <div class="absolute inset-0 bg-black/50"></div>
+          <div class="relative max-w-5xl mx-auto mt-6 mb-10 bg-white/5 backdrop-blur-lg border border-white/10 rounded-2xl shadow-soft text-white max-h-[80vh] overflow-y-auto">
+            <div class="flex items-center justify-between p-5 border-b border-white/10">
+              <h3 class="text-xl font-bold">Nova Passagem de Turno</h3>
+              <button id="fecharModal" class="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20">Fechar</button>
+            </div>
+            <div class="p-5 space-y-6">
+              <div class="grid lg:grid-cols-4 gap-4">
+                <div>
+                  <label class="block text-white/80 mb-2">Data e Hora</label>
+                  <input id="cadDataHora" type="datetime-local" class="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 focus:outline-none focus:ring-2 focus:ring-brand-400" />
+                </div>
+                <div>
+                  <label class="block text-white/80 mb-2">Turno</label>
+                  <select id="cadTurno" class="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 focus:outline-none focus:ring-2 focus:ring-brand-400">
+                    <option>Letra A</option>
+                    <option>Letra B</option>
+                    <option>Letra C</option>
+                    <option>Letra D</option>
+                    <option>ADM</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-white/80 mb-2">Supervisor</label>
+                  <select id="cadSupervisor" class="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 focus:outline-none focus:ring-2 focus:ring-brand-400"></select>
+                </div>
+                <div>
+                  <label class="block text-white/80 mb-2">Encarregado</label>
+                  <select id="cadEncarregado" class="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 focus:outline-none focus:ring-2 focus:ring-brand-400"></select>
+                </div>
+                <div class="lg:col-span-2">
+                  <label class="block text-white/80 mb-2">Técnico de Segurança</label>
+                  <select id="cadTecnico" class="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 focus:outline-none focus:ring-2 focus:ring-brand-400"></select>
+                </div>
+              </div>
+
+              <div class="text-center">
+                <h4 class="text-lg font-extrabold tracking-wide">Localização dos Equipamentos</h4>
+              </div>
+
+              <div class="grid lg:grid-cols-2 gap-6">
+                <div class="rounded-2xl p-4 border border-white/10 bg-white/5">
+                  <div class="flex items-center justify-between mb-3">
+                    <h5 class="text-lg font-bold">PORTO</h5>
+                    <div class="flex items-center gap-2">
+                      <button id="portoAdd" class="px-3 py-1.5 rounded-lg bg-brand-500 hover:bg-brand-400">+ Adicionar</button>
+                      <button id="portoEditToggle" class="hidden px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20">Editar</button>
+                    </div>
+                  </div>
+                  <div class="space-y-3">
+                    <ul id="portoLista" class="space-y-2"></ul>
+                    <div id="portoBuilder" class="hidden p-3 rounded-xl bg-white/5 border border-white/10"></div>
+                  </div>
+                </div>
+
+                <div class="rounded-2xl p-4 border border-white/10 bg-white/5 lg:border-l lg:pl-6">
+                  <div class="flex items-center justify-between mb-3">
+                    <h5 class="text-lg font-bold">USINA</h5>
+                    <div class="flex items-center gap-2">
+                      <button id="usinaAdd" class="px-3 py-1.5 rounded-lg bg-brand-500 hover:bg-brand-400">+ Adicionar</button>
+                      <button id="usinaEditToggle" class="hidden px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20">Editar</button>
+                    </div>
+                  </div>
+                  <div class="space-y-3">
+                    <ul id="usinaLista" class="space-y-2"></ul>
+                    <div id="usinaBuilder" class="hidden p-3 rounded-xl bg-white/5 border border-white/10"></div>
+                  </div>
+                </div>
+              </div>
+
+              <hr class="border-white/10" />
+
+              <div class="text-center">
+                <h4 class="text-lg font-extrabold tracking-wide">OBSERVAÇÕES</h4>
+              </div>
+              <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div>
+                  <label class="block text-white/80 mb-2">PORTO</label>
+                  <textarea id="obsPorto" rows="3" class="w-full px-3 py-2 rounded-xl bg-white/10 border border-white/20"></textarea>
+                </div>
+                <div>
+                  <label class="block text-white/80 mb-2">USINA</label>
+                  <textarea id="obsUsina" rows="3" class="w-full px-3 py-2 rounded-xl bg-white/10 border border-white/20"></textarea>
+                </div>
+                <div>
+                  <label class="block text-white/80 mb-2">MANUTENÇÃO</label>
+                  <textarea id="obsManutencao" rows="3" class="w-full px-3 py-2 rounded-xl bg-white/10 border border-white/20"></textarea>
+                </div>
+                <div>
+                  <label class="block text-white/80 mb-2">ADMINISTRATIVO</label>
+                  <textarea id="obsAdm" rows="3" class="w-full px-3 py-2 rounded-xl bg-white/10 border border-white/20"></textarea>
+                </div>
+                <div>
+                  <label class="block text-white/80 mb-2">SEGURANÇA</label>
+                  <textarea id="obsSeguranca" rows="3" class="w-full px-3 py-2 rounded-xl bg-white/10 border border-white/20"></textarea>
+                </div>
+                <div>
+                  <label class="block text-white/80 mb-2">MOBILIZAÇÃO / DESMOBILIZAÇÃO</label>
+                  <textarea id="obsMobilizacao" rows="3" class="w-full px-3 py-2 rounded-xl bg-white/10 border border-white/20"></textarea>
+                </div>
+              </div>
+
+              <div class="flex items-center justify-end gap-3 pt-2">
+                <button id="cancelarPassagem" class="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20">Cancelar</button>
+                <button id="salvarPassagem" class="px-5 py-2.5 rounded-xl bg-brand-500 hover:bg-brand-400 font-semibold">Salvar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="viewDetalhePassagem" class="hidden max-w-6xl mx-auto px-4 pt-10 pb-24">
+        <div class="flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <h2 class="text-2xl sm:text-3xl font-extrabold">Detalhes da Passagem</h2>
+            <p class="text-white/80">Confira o resumo completo do registro.</p>
+          </div>
+          <div class="flex flex-wrap items-center gap-3">
+            <button id="btnEditar" class="px-4 py-2 rounded-xl bg-brand-500 hover:bg-brand-400 transition font-semibold">Editar publicação</button>
+            <button id="btnExportar" class="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 transition">Exportar (PDF)</button>
+            <button id="btnCompartilhar" class="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 transition">Compartilhar</button>
+            <button id="btnExcluir" class="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 transition font-semibold">Excluir</button>
+            <button id="voltarDoDetalhe" class="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 transition">Voltar</button>
+          </div>
+        </div>
+        <div id="passagemDetalhe" class="mt-6 glass rounded-2xl p-6 shadow-soft"></div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    // ---------------------- Service Worker Registration ----------------------
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/service-worker.js')
+          .then(registration => {
+            console.log('Service Worker registrado com sucesso: ', registration);
+          })
+          .catch(error => {
+            console.log('Falha ao registrar o Service Worker: ', error);
+          });
+      });
+    }
+
+    // ---------------------- Dados iniciais e utilidades ----------------------
+    const initialUsers = [
+      // Supervisores
+      { name: 'MANOEL FELIX', matricula: '2344', role: 'Supervisor' },
+      { name: 'SILVERIO DE OLIVEIRA ESTEVÃO', matricula: '006077', role: 'Supervisor' },
+      { name: 'JEFFERSON MELIM', matricula: '10422', role: 'Supervisor' },
+      { name: 'DANIEL CARDOSO MURGIA', matricula: '1190', role: 'Supervisor' },
+      { name: 'CARLOS SOUZA RAMOS', matricula: '1668', role: 'Supervisor' },
+      { name: 'VITOR BONINSENHA COSTA', matricula: '2346', role: 'Supervisor' },
+      { name: 'LUANA DE CASTRO', matricula: '1791', role: 'Supervisor' },
+      // Encarregados
+      { name: 'DAVID FERREIRA MUNIZ', matricula: '2311', role: 'Encarregado' },
+      { name: 'GILIARD RIBEIRO CARDOSO', matricula: '1007', role: 'Encarregado' },
+      { name: 'RONDCLEY FERNANDES DE CASTRO', matricula: '2232', role: 'Encarregado' },
+      { name: 'JEFFERSON ALVES', matricula: '2306', role: 'Encarregado' },
+      { name: 'JEANDERSON FERREIRA DE OLIVEIRA', matricula: '2065', role: 'Encarregado' },
+      { name: 'PATRICK SANTOS DE ANDRADE', matricula: '2062', role: 'Encarregado' },
+      { name: 'MAGNO DAVI CASTRO', matricula: '1707', role: 'Encarregado' },
+      { name: 'VINICIUS DE SOUZA', matricula: '2085', role: 'Encarregado' },
+      { name: 'JOÃO NETO', matricula: '2400', role: 'Encarregado' },
+    ];
+    const LS_KEYS = {
+      users: 'pt_users',
+      current: 'pt_current_user',
+      passagens: 'pt_passagens'
+    };
+
+    function seedUsers() {
+      const existing = JSON.parse(localStorage.getItem(LS_KEYS.users) || '{}');
+      if (Object.keys(existing).length > 0) return existing;
+
+      const obj = {};
+      for (const u of initialUsers) {
+        obj[u.matricula] = {
+          name: titleCase(u.name),
+          matricula: u.matricula,
+          role: u.role,
+          turno: 'ADM',
+          photo: null
+        };
+      }
+      localStorage.setItem(LS_KEYS.users, JSON.stringify(obj));
+      return obj;
+    }
+    function getUsers() {
+      let data = localStorage.getItem(LS_KEYS.users);
+      if (!data) return seedUsers();
+      try { return JSON.parse(data); } catch { return seedUsers(); }
+    }
+    function saveUsers(obj) {
+      localStorage.setItem(LS_KEYS.users, JSON.stringify(obj));
+    }
+    function getCurrent() {
+      const m = localStorage.getItem(LS_KEYS.current);
+      if (!m) return null;
+      const users = getUsers();
+      return users[m] || null;
+    }
+    function setCurrent(matricula) {
+      localStorage.setItem(LS_KEYS.current, matricula);
+    }
+
+    function titleCase(str) {
+      return str.toLowerCase().split(' ').map(w => {
+        if (!w) return w;
+        if (['de','da','do','dos','das','e'].includes(w)) return w;
+        return w[0].toUpperCase() + w.slice(1);
+      }).join(' ');
+    }
+    function initials(name) {
+      const parts = name.trim().split(/\s+/);
+      const first = parts[0]?.[0] || '';
+      const last = parts.length > 1 ? parts[parts.length - 1][0] : '';
+      return (first + last).toUpperCase();
+    }
+    function avatarSVG(name) {
+      const ini = initials(name);
+      return `
+        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+          <defs>
+            <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#2aa3ff"/>
+              <stop offset="100%" stop-color="#0d6fbe"/>
+            </linearGradient>
+          </defs>
+          <rect width="100" height="100" fill="url(#g)"/>
+          <text x="50" y="58" text-anchor="middle" fill="white" font-size="42" font-family="Inter, Arial" font-weight="700">${ini}</text>
+        </svg>`;
+    }
+    function renderAvatar(el, user) {
+      el.innerHTML = '';
+      const img = document.createElement('img');
+      img.alt = user.name;
+      img.className = 'w-full h-full object-cover';
+      img.src = user.photo ? user.photo : 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(avatarSVG(user.name));
+      el.appendChild(img);
+    }
+    function escapeHTML(str) {
+      return String(str).replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s]));
+    }
+
+    // ---------------------- Navegação ----------------------
+    const viewLogin = document.getElementById('viewLogin');
+    const viewHome = document.getElementById('viewHome');
+    const viewPerfil = document.getElementById('viewPerfil');
+    const viewTurno = document.getElementById('viewTurno');
+    const viewDetalhePassagem = document.getElementById('viewDetalhePassagem');
+    const btnSairHome = document.getElementById('btnSairHome');
+    const userChip = document.getElementById('userChip');
+    const chipAvatar = document.getElementById('chipAvatar');
+    const chipName = document.getElementById('chipName');
+    const chipRole = document.getElementById('chipRole');
+
+    function show(sectionEl) {
+      [viewLogin, viewHome, viewPerfil, viewTurno, viewDetalhePassagem].forEach(s => s.classList.add('hidden'));
+      sectionEl.classList.remove('hidden');
+      const current = getCurrent();
+      const showUser = !!current && sectionEl !== viewLogin;
+      userChip.classList.toggle('hidden', !showUser);
+      if (current && showUser) {
+        chipName.textContent = current.name;
+        chipRole.textContent = `${current.role} • ${current.turno}`;
+        renderAvatar(chipAvatar, current);
+      }
+    }
+    function signOut() {
+      localStorage.removeItem(LS_KEYS.current);
+      show(viewLogin);
+      document.getElementById('matriculaInput').value = '';
+      document.getElementById('loginErro').classList.add('hidden');
+    }
+    btnSairHome.addEventListener('click', signOut);
+
+    // ---------------------- Login por matrícula ----------------------
+    const matriculaInput = document.getElementById('matriculaInput');
+    const loginErro = document.getElementById('loginErro');
+
+    seedUsers(); // garante usuários
+
+    document.getElementById('btnEntrar').addEventListener('click', () => {
+      const mat = (matriculaInput.value || '').trim();
+      const users = getUsers();
+      if (users[mat]) {
+        setCurrent(mat);
+        carregarHome();
+        show(viewHome);
+      } else {
+        loginErro.classList.remove('hidden');
+      }
+    });
+    matriculaInput.addEventListener('input', () => loginErro.classList.add('hidden'));
+
+    // ---------------------- Home ----------------------
+    const homeAvatar = document.getElementById('homeAvatar');
+    const homeName = document.getElementById('homeName');
+    const homeRole = document.getElementById('homeRole');
+    const homeMatricula = document.getElementById('homeMatricula');
+
+    function carregarHome() {
+      const u = getCurrent();
+      if (!u) return;
+      renderAvatar(homeAvatar, u);
+      homeName.textContent = u.name;
+      homeRole.textContent = `${u.role} • ${u.turno}`;
+      homeMatricula.textContent = `Matrícula: ${u.matricula}`;
+    }
+
+    document.getElementById('goPerfil').addEventListener('click', () => {
+      carregarPerfil();
+      show(viewPerfil);
+    });
+    document.getElementById('goTurno').addEventListener('click', () => {
+      renderVitrine();
+      renderHistory();
+      show(viewTurno);
+    });
+
+    // ---------------------- Perfil ----------------------
+    const perfilNome = document.getElementById('perfilNome');
+    const perfilMatricula = document.getElementById('perfilMatricula');
+    const perfilAvatar = document.getElementById('perfilAvatar');
+    const inputFoto = document.getElementById('inputFoto');
+    const removerFoto = document.getElementById('removerFoto');
+    const perfilRole = document.getElementById('perfilRole');
+    const perfilTurno = document.getElementById('perfilTurno');
+    const salvarPerfil = document.getElementById('salvarPerfil');
+    const perfilSaved = document.getElementById('perfilSaved');
+
+    function carregarPerfil() {
+      const u = getCurrent();
+      if (!u) return;
+      perfilNome.textContent = u.name;
+      perfilMatricula.textContent = `Matrícula: ${u.matricula}`;
+      perfilRole.value = u.role;
+      perfilTurno.value = u.turno || 'ADM';
+      renderAvatar(perfilAvatar, u);
+      perfilSaved.classList.add('hidden');
+    }
+    inputFoto.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        const users = getUsers();
+        const u = getCurrent();
+        users[u.matricula].photo = reader.result;
+        saveUsers(users);
+        renderAvatar(perfilAvatar, users[u.matricula]);
+        renderAvatar(homeAvatar, users[u.matricula]);
+        renderAvatar(chipAvatar, users[u.matricula]);
+      };
+      reader.readAsDataURL(file);
+      inputFoto.value = '';
+    });
+    removerFoto.addEventListener('click', () => {
+      const users = getUsers();
+      const u = getCurrent();
+      users[u.matricula].photo = null;
+      saveUsers(users);
+      renderAvatar(perfilAvatar, users[u.matricula]);
+      renderAvatar(homeAvatar, users[u.matricula]);
+      renderAvatar(chipAvatar, users[u.matricula]);
+    });
+    salvarPerfil.addEventListener('click', () => {
+      const users = getUsers();
+      const u = getCurrent();
+      users[u.matricula].role = perfilRole.value;
+      users[u.matricula].turno = perfilTurno.value;
+      saveUsers(users);
+      carregarHome();
+      chipRole.textContent = `${users[u.matricula].role} • ${users[u.matricula].turno}`;
+      perfilSaved.classList.remove('hidden');
+      setTimeout(() => perfilSaved.classList.add('hidden'), 1800);
+    });
+    document.getElementById('voltarDoPerfil').addEventListener('click', () => {
+      carregarHome();
+      show(viewHome);
+    });
+
+    // ---------------------- Passagem de Turno ----------------------
+    const btnAddPassagem = document.getElementById('btnAddPassagem');
+    const modalPassagem = document.getElementById('modalPassagem');
+    const fecharModal = document.getElementById('fecharModal');
+    const cancelarPassagem = document.getElementById('cancelarPassagem');
+    const salvarPassagem = document.getElementById('salvarPassagem');
+    const vitrineTurnos = document.getElementById('vitrineTurnos');
+    const historyList = document.getElementById('historyList');
+    const voltarDoTurno = document.getElementById('voltarDoTurno');
+    const passagemDetalhe = document.getElementById('passagemDetalhe');
+    const voltarDoDetalhe = document.getElementById('voltarDoDetalhe');
+    const btnEditar = document.getElementById('btnEditar');
+    const btnExcluir = document.getElementById('btnExcluir');
+    const btnExportar = document.getElementById('btnExportar');
+    const btnCompartilhar = document.getElementById('btnCompartilhar');
+
+
+    // Selects do cabeçalho
+    const cadDataHora = document.getElementById('cadDataHora');
+    const cadTurno = document.getElementById('cadTurno');
+    const cadSupervisor = document.getElementById('cadSupervisor');
+    const cadEncarregado = document.getElementById('cadEncarregado');
+    const cadTecnico = document.getElementById('cadTecnico');
+
+    // Áreas PORTO / USINA
+    const portoLista = document.getElementById('portoLista');
+    const portoBuilder = document.getElementById('portoBuilder');
+    const portoAdd = document.getElementById('portoAdd');
+    const portoEditToggle = document.getElementById('portoEditToggle');
+
+    const usinaLista = document.getElementById('usinaLista');
+    const usinaBuilder = document.getElementById('usinaBuilder');
+    const usinaAdd = document.getElementById('usinaAdd');
+    const usinaEditToggle = document.getElementById('usinaEditToggle');
+
+    // Observações
+    const obsPorto = document.getElementById('obsPorto');
+    const obsUsina = document.getElementById('obsUsina');
+    const obsManutencao = document.getElementById('obsManutencao');
+    const obsAdm = document.getElementById('obsAdm');
+    const obsSeguranca = document.getElementById('obsSeguranca');
+    const obsMobilizacao = document.getElementById('obsMobilizacao');
+
+    const EQUIP_OPCOES = [
+      '2091','6082','7017','7018','7019','7020','13004','13006','13009','13012','13015','14027','17512',
+      '40/100/33','40/100/34','40/100/42','40/100/43','40/100/45','40/110/14','40/110/18','40/110/19','40/110/22',
+      '40/120/02','40/200/01','40/250/14','40/250/15','40/250/16','40/250/17','40/250/18','40/250/20','40/250/21',
+      '40/250/23','40/250/30','40/250/31','40/250/35','40/250/36','40/250/37','40/250/38',
+      '40/30/53','40/30/55','40/30/57','40/30/58','40/30/59',
+      '40/60/71','40/60/77','40/75/05','40/75/11','40/75/14','40/75/15',
+      '40/85/08','40/85/17','40/85/19',
+      '42/30/01','42/30/02','42/55/02','42/70/04','42/70/05','42/70/07',
+      '46/10/04','46/10/05','46/10/06','46/10/07','46/10/08','46/14/01','46/14/02','46/14/03',
+      '76/03/02','76/03/03','76/03/04','76/03/05','76/03/06','76/03/07','76/03/08','76/03/09',
+      '76/04/03','76/04/04','76/04/05','76/04/06','76/04/07','76/04/08','76/04/09','76/04/10','76/04/11','76/04/12','76/04/13','76/04/14',
+      '76/05/02','76/05/03','76/05/04',
+      '76/07/08','76/07/09','76/07/10','76/07/12','76/07/13','76/07/14',
+      '76/16/02','76/16/03',
+      '80/10/01','80/10/02','80/10/03','80/10/04','80/10/05','80/10/06','80/10/07','80/10/08','80/10/09','80/10/10','80/10/11','80/10/12','80/10/13','80/10/14','80/10/15','80/10/16','80/10/17','80/10/18','80/10/19','80/10/20',
+      '80/22/09'
+    ];
+
+    const SUPERVISORES = [
+      'Manoel Felix','Silverio de Oliveira Estevão','Jefferson Melim','Daniel Cardoso Murgia','Carlos Souza Ramos','Vitor Boninsenha Costa','Luana de Castro'
+    ];
+    const ENCARREGADOS = [
+      'David Ferreira Muniz','Giliard Ribeiro Cardoso','Rondcley Fernandes de Castro','Jefferson Alves','Jeanderson Ferreira de Oliveira','Patrick Santos de Andrade','Magno Davi Castro','Vinicius de Souza','João Neto'
+    ];
+    const TECNICOS = [
+      'Anderson de Oliveira Correa','José Marcelo Flegler de Barros','Tarcila de Jesus Bastos','Cleidson Wacton da Silva','Rhamone Nathielle Nunes Barreto','Lyssa Dettmann Paradizo','Claudiane Ramos Honorato'
+    ];
+
+    function fillOptions(select, arr) {
+      select.innerHTML = '<option value="">Selecione...</option>' + arr.map(n => `<option>${n}</option>`).join('');
+    }
+
+    // Estado temporário do modal
+    let portoLinhas = []; // [{frota, texto}]
+    let usinaLinhas = [];
+    let portoFinalizado = false;
+    let usinaFinalizado = false;
+    let editingPassagemId = null;
+
+    function resetModalState() {
+      cadDataHora.value = '';
+      cadTurno.value = 'ADM';
+      fillOptions(cadSupervisor, SUPERVISORES);
+      fillOptions(cadEncarregado, ENCARREGADOS);
+      fillOptions(cadTecnico, TECNICOS);
+
+      portoLinhas = [];
+      usinaLinhas = [];
+      portoFinalizado = false;
+      usinaFinalizado = false;
+      editingPassagemId = null;
+
+      portoLista.innerHTML = '';
+      usinaLista.innerHTML = '';
+      portoBuilder.innerHTML = '';
+      usinaBuilder.innerHTML = '';
+      portoBuilder.classList.add('hidden');
+      usinaBuilder.classList.add('hidden');
+      portoEditToggle.classList.add('hidden');
+      usinaEditToggle.classList.add('hidden');
+
+      obsPorto.value = '';
+      obsUsina.value = '';
+      obsManutencao.value = '';
+      obsAdm.value = '';
+      obsSeguranca.value = '';
+      obsMobilizacao.value = '';
+    }
+
+    // Builder genérico (PORTO / USINA)
+    function abrirBuilder(tipo) {
+      const builder = tipo === 'porto' ? portoBuilder : usinaBuilder;
+      const lista = tipo === 'porto' ? portoLista : usinaLista;
+      const finalizado = tipo === 'porto' ? portoFinalizado : usinaFinalizado;
+
+      if (finalizado) {
+        // Reabre para adicionar mais
+        if (tipo === 'porto') portoFinalizado = false; else usinaFinalizado = false;
+        document.getElementById(tipo + 'EditToggle').classList.add('hidden');
+      }
+
+      builder.classList.remove('hidden');
+      if (!builder.dataset.active) {
+        builder.dataset.active = 'true';
+        criarLinhaSelecao(tipo, builder, lista);
+      }
+    }
+
+    function criarLinhaSelecao(tipo, builder, lista) {
+      const wrap = document.createElement('div');
+      wrap.className = 'rounded-lg bg-white/5 border border-white/10 p-3';
+      wrap.innerHTML = `
+        <div class="flex flex-col gap-2">
+          <div class="flex items-center gap-2">
+            <select class="flex-1 px-3 py-2 rounded-lg bg-white/10 border border-white/20">${EQUIP_OPCOES.map(v => `<option>${v}</option>`).join('')}</select>
+            <span class="opacity-80">-</span>
+            <input type="text" placeholder="Descrição" class="flex-1 px-3 py-2 rounded-lg bg-white/10 border border-white/20" />
+            <button data-finalizar class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500">V</button>
+          </div>
+        </div>
+      `;
+      builder.appendChild(wrap);
+
+      const select = wrap.querySelector('select');
+      const input = wrap.querySelector('input');
+      const btnFim = wrap.querySelector('[data-finalizar]');
+
+      function confirmarLinha() {
+        const frota = select.value.trim();
+        const texto = input.value.trim();
+        if (!frota || !texto) { alert('Selecione a frota e escreva a descrição.'); return false; }
+        // Salva no array
+        if (tipo === 'porto') {
+          portoLinhas.push({ frota, texto });
+        } else {
+          usinaLinhas.push({ frota, texto });
+        }
+        // Mostra fixo na lista
+        const li = document.createElement('li');
+        li.className = 'flex items-center gap-2 justify-between rounded-lg bg-white/5 border border-white/10 px-3 py-2';
+        li.innerHTML = `
+          <div class="truncate"><span class="font-semibold">${escapeHTML(frota)}</span> - <span class="text-white/80">${escapeHTML(texto)}</span></div>
+          <button class="px-2 py-1 rounded bg-white/10 hover:bg-white/20 text-sm" data-edit>Editar</button>
+        `;
+        lista.appendChild(li);
+
+        // Limpa a linha ativa para permitir a próxima
+        select.disabled = true;
+        input.disabled = true;
+        wrap.classList.add('opacity-90');
+        return true;
+      }
+      
+      btnFim.addEventListener('click', () => {
+        // Se a linha ainda não foi confirmada, confirma
+        if (!select.disabled) {
+          if (!confirmarLinha()) return;
+        }
+        // Finaliza e esconde o builder
+        builder.classList.add('hidden');
+        builder.innerHTML = '';
+        builder.dataset.active = '';
+        if (tipo === 'porto') {
+          portoFinalizado = true;
+          portoEditToggle.classList.remove('hidden');
+        } else {
+          usinaFinalizado = true;
+          usinaEditToggle.classList.remove('hidden');
+        }
+        // Exibe botões "Editar" por item
+        lista.querySelectorAll('[data-edit]').forEach(b => b.classList.remove('hidden'));
+        // Liga o editar por item
+        lista.querySelectorAll('li').forEach((li, idx) => {
+          const editBtn = li.querySelector('[data-edit]');
+          editBtn.addEventListener('click', () => {
+            editarItemLinha(tipo, li, idx);
+          });
+        });
+      });
+    }
+
+    function editarItemLinha(tipo, liEl, index) {
+      const arr = tipo === 'porto' ? portoLinhas : usinaLinhas;
+      const item = arr[index];
+      const original = liEl.innerHTML;
+      liEl.innerHTML = `
+        <div class="flex items-center gap-2 w-full">
+          <select class="px-2 py-1 rounded bg-white/10 border border-white/20">
+            ${EQUIP_OPCOES.map(v => `<option ${v===item.frota?'selected':''}>${v}</option>`).join('')}
+          </select>
+          <span>-</span>
+          <input type="text" class="flex-1 px-2 py-1 rounded bg-white/10 border border-white/20" value="${escapeHTML(item.texto)}" />
+          <button class="px-2 py-1 rounded bg-emerald-600 hover:bg-emerald-500 text-sm">Salvar</button>
+          <button class="px-2 py-1 rounded bg-rose-600 hover:bg-rose-500 text-sm" data-delete>Excluir</button>
+        </div>
+      `;
+      const sel = liEl.querySelector('select');
+      const inp = liEl.querySelector('input');
+      const btnSalvar = liEl.querySelector('button:nth-of-type(1)');
+      const btnDelete = liEl.querySelector('[data-delete]');
+      btnSalvar.addEventListener('click', () => {
+        const frota = sel.value.trim();
+        const texto = inp.value.trim();
+        if (!frota || !texto) { alert('Preencha a frota e a descrição.'); return; }
+        arr[index] = { frota, texto };
+        liEl.innerHTML = `
+          <div class="truncate"><span class="font-semibold">${escapeHTML(frota)}</span> - <span class="text-white/80">${escapeHTML(texto)}</span></div>
+          <button class="px-2 py-1 rounded bg-white/10 hover:bg-white/20 text-sm" data-edit>Editar</button>
+        `;
+        liEl.querySelector('[data-edit]').addEventListener('click', () => editarItemLinha(tipo, liEl, index));
+      });
+      btnDelete.addEventListener('click', () => {
+        if (!confirm('Tem certeza que deseja excluir esta linha?')) return;
+        arr.splice(index, 1);
+        liEl.remove();
+      });
+    }
+
+    portoAdd.addEventListener('click', () => abrirBuilder('porto'));
+    usinaAdd.addEventListener('click', () => abrirBuilder('usina'));
+
+    portoEditToggle.addEventListener('click', () => {
+      abrirBuilder('porto');
+    });
+    usinaEditToggle.addEventListener('click', () => {
+      abrirBuilder('usina');
+    });
+
+    // Modal open/close
+    btnAddPassagem.addEventListener('click', () => {
+      resetModalState();
+      const u = getCurrent();
+      // Sugestões iniciais
+      const now = new Date();
+      cadDataHora.value = new Date(now.getTime() - now.getTimezoneOffset()*60000).toISOString().slice(0,16);
+      cadTurno.value = u?.turno || 'ADM';
+      modalPassagem.classList.remove('hidden');
+    });
+    function fecharModalCadastro() {
+      modalPassagem.classList.add('hidden');
+    }
+    fecharModal.addEventListener('click', fecharModalCadastro);
+    cancelarPassagem.addEventListener('click', fecharModalCadastro);
+
+    // Salvar passagem
+    salvarPassagem.addEventListener('click', () => {
+      const dataHora = cadDataHora.value;
+      const turno = cadTurno.value;
+      const supervisor = cadSupervisor.value;
+      const encarregado = cadEncarregado.value;
+      const tecnico = cadTecnico.value;
+
+      if (!dataHora || !turno || !supervisor || !encarregado || !tecnico) {
+        alert('Preencha Data/Hora, Turno, Supervisor, Encarregado e Técnico de Segurança.');
+        return;
+      }
+
+      // Finaliza automaticamente se builder estiver aberto
+      if (!portoFinalizado && portoBuilder && !portoBuilder.classList.contains('hidden')) {
+        portoBuilder.querySelector('[data-finalizar]')?.click();
+      }
+      if (!usinaFinalizado && usinaBuilder && !usinaBuilder.classList.contains('hidden')) {
+        usinaBuilder.querySelector('[data-finalizar]')?.click();
+      }
+
+      const u = getCurrent();
+      const passagem = {
+        id: editingPassagemId || 'pas_' + Date.now(),
+        dataHora,
+        turno,
+        supervisor,
+        encarregado,
+        tecnico,
+        porto: portoLinhas.slice(),
+        usina: usinaLinhas.slice(),
+        obs: {
+          porto: obsPorto.value.trim(),
+          usina: obsUsina.value.trim(),
+          manutencao: obsManutencao.value.trim(),
+          adm: obsAdm.value.trim(),
+          seguranca: obsSeguranca.value.trim(),
+          mobilizacao: obsMobilizacao.value.trim(),
+        },
+        autor: { nome: u?.name || '', matricula: u?.matricula || '' }
+      };
+
+      let arr = getPassagens();
+      if (editingPassagemId) {
+        const index = arr.findIndex(p => p.id === editingPassagemId);
+        if (index !== -1) {
+          arr[index] = passagem;
+        }
+      } else {
+        arr.unshift(passagem);
+      }
+      savePassagens(arr);
+      fecharModalCadastro();
+      renderVitrine();
+      renderHistory();
+    });
+
+    function getPassagens() {
+      try { return JSON.parse(localStorage.getItem(LS_KEYS.passagens) || '[]'); } catch { return []; }
+    }
+    function savePassagens(arr) {
+      localStorage.setItem(LS_KEYS.passagens, JSON.stringify(arr));
+    }
+
+    function renderVitrine() {
+      const arr = getPassagens();
+      vitrineTurnos.innerHTML = '';
+      if (arr.length === 0) {
+        const empty = document.createElement('div');
+        empty.className = 'text-white/70';
+        empty.textContent = 'Nenhuma passagem cadastrada ainda.';
+        vitrineTurnos.appendChild(empty);
+        btnAddPassagem.classList.remove('hidden');
+        return;
+      }
+      btnAddPassagem.classList.add('hidden');
+      arr.forEach(p => {
+        const card = cardPassagem(p);
+        card.addEventListener('click', () => {
+          renderDetalhePassagem(p);
+          show(viewDetalhePassagem);
+        });
+        vitrineTurnos.appendChild(card);
+      });
+    }
+
+    function renderHistory() {
+      const arr = getPassagens();
+      historyList.innerHTML = '';
+      if (arr.length === 0) {
+        historyList.innerHTML = '<p class="text-white/70">Nenhum histórico disponível.</p>';
+        return;
+      }
+      arr.forEach(p => {
+        const historyItem = document.createElement('div');
+        historyItem.className = 'p-4 rounded-xl bg-white/5 border border-white/10';
+        const dataHora = new Date(p.dataHora).toLocaleString();
+        historyItem.innerHTML = `<span class="font-semibold">${escapeHTML(p.autor.nome)} (${escapeHTML(p.autor.matricula)})</span> publicou uma passagem em <span class="text-white/70">${dataHora}</span>.`;
+        historyList.appendChild(historyItem);
+      });
+    }
+
+    function cardPassagem(p) {
+      const wrap = document.createElement('div');
+      wrap.className = 'glass rounded-2xl p-5 shadow-soft cursor-pointer hover:bg-white/10 transition';
+      const dh = new Date(p.dataHora);
+      const dataFormatada = dh.toLocaleString();
+
+      wrap.innerHTML = `
+        <div class="flex items-start justify-between gap-3">
+          <div>
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="px-2.5 py-1 rounded-full text-xs bg-white/10">${escapeHTML(p.turno)}</span>
+              <span class="text-white/70 text-sm">${dataFormatada}</span>
+            </div>
+            <div class="mt-2 grid sm:grid-cols-3 gap-2 text-sm text-white/80">
+              <div><span class="text-white/60">Supervisor:</span> ${escapeHTML(p.supervisor)}</div>
+              <div><span class="text-white/60">Encarregado:</span> ${escapeHTML(p.encarregado)}</div>
+              <div><span class="text-white/60">Téc. Segurança:</span> ${escapeHTML(p.tecnico)}</div>
+            </div>
+          </div>
+          <button class="px-3 py-2 rounded-lg bg-white/10 hover:bg-white/20" data-del>Excluir</button>
+        </div>
+      `;
+
+      wrap.querySelector('[data-del]').addEventListener('click', (e) => {
+        e.stopPropagation(); // Evita que o clique no botão ative a tela de detalhes
+        if (!confirm('Excluir esta passagem?')) return;
+        const arr = getPassagens().filter(x => x.id !== p.id);
+        savePassagens(arr);
+        renderVitrine();
+        renderHistory();
+      });
+
+      return wrap;
+    }
+
+    function renderDetalhePassagem(p) {
+        const dh = new Date(p.dataHora);
+        const dataFormatada = dh.toLocaleString();
+
+        function listaHTML(items) {
+          if (!items || items.length === 0) return '<p class="text-white/60">Sem registros.</p>';
+          return `<ul class="space-y-1">${items.map(it => `<li class="flex items-center gap-2"><span class="font-semibold">${escapeHTML(it.frota)}</span> - <span class="text-white/80">${escapeHTML(it.texto)}</span></li>`).join('')}</ul>`;
+        }
+
+        passagemDetalhe.innerHTML = `
+          <div>
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="px-2.5 py-1 rounded-full text-xs bg-white/10">${escapeHTML(p.turno)}</span>
+              <span class="text-white/70 text-sm">${dataFormatada}</span>
+            </div>
+            <div class="mt-4 grid sm:grid-cols-3 gap-4 text-sm text-white/80">
+              <div><span class="text-white/60">Supervisor:</span> ${escapeHTML(p.supervisor)}</div>
+              <div><span class="text-white/60">Encarregado:</span> ${escapeHTML(p.encarregado)}</div>
+              <div><span class="text-white/60">Téc. Segurança:</span> ${escapeHTML(p.tecnico)}</div>
+            </div>
+          </div>
+
+          <div class="mt-6 grid lg:grid-cols-2 gap-6">
+            <div>
+              <h5 class="font-bold mb-2">PORTO</h5>
+              ${listaHTML(p.porto)}
+            </div>
+            <div class="lg:border-l lg:pl-6 border-white/10">
+              <h5 class="font-bold mb-2">USINA</h5>
+              ${listaHTML(p.usina)}
+            </div>
+          </div>
+
+          <hr class="my-6 border-white/10" />
+
+          <div>
+            <h5 class="font-bold text-center mb-3">OBSERVAÇÕES</h5>
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-3 text-sm">
+              <div><span class="text-white/60">PORTO:</span><div class="text-white/80 mt-1 whitespace-pre-line">${escapeHTML(p.obs.porto || '')}</div></div>
+              <div><span class="text-white/60">USINA:</span><div class="text-white/80 mt-1 whitespace-pre-line">${escapeHTML(p.obs.usina || '')}</div></div>
+              <div><span class="text-white/60">MANUTENÇÃO:</span><div class="text-white/80 mt-1 whitespace-pre-line">${escapeHTML(p.obs.manutencao || '')}</div></div>
+              <div><span class="text-white/60">ADMINISTRATIVO:</span><div class="text-white/80 mt-1 whitespace-pre-line">${escapeHTML(p.obs.adm || '')}</div></div>
+              <div><span class="text-white/60">SEGURANÇA:</span><div class="text-white/80 mt-1 whitespace-pre-line">${escapeHTML(p.obs.seguranca || '')}</div></div>
+              <div><span class="text-white/60">MOBILIZAÇÃO / DESMOBILIZAÇÃO:</span><div class="text-white/80 mt-1 whitespace-pre-line">${escapeHTML(p.obs.mobilizacao || '')}</div></div>
+            </div>
+            <div class="mt-4 text-white/60 text-sm">Autor: ${escapeHTML(p.autor.nome)} (${escapeHTML(p.autor.matricula)})</div>
+          </div>
+        `;
+
+        btnEditar.onclick = () => editPassagem(p);
+        btnExcluir.onclick = () => deletePassagem(p.id);
+        btnExportar.onclick = () => exportPDF(p);
+        btnCompartilhar.onclick = () => sharePassagem(p);
+    }
+    
+    function findPassagem(id) {
+        return getPassagens().find(p => p.id === id);
+    }
+    
+    function editPassagem(p) {
+        resetModalState();
+        editingPassagemId = p.id;
+        
+        cadDataHora.value = p.dataHora.substring(0, 16);
+        cadTurno.value = p.turno;
+        cadSupervisor.value = p.supervisor;
+        cadEncarregado.value = p.encarregado;
+        cadTecnico.value = p.tecnico;
+        
+        obsPorto.value = p.obs.porto;
+        obsUsina.value = p.obs.usina;
+        obsManutencao.value = p.obs.manutencao;
+        obsAdm.value = p.obs.adm;
+        obsSeguranca.value = p.obs.seguranca;
+        obsMobilizacao.value = p.obs.mobilizacao;
+        
+        p.porto.forEach(item => {
+            const li = document.createElement('li');
+            li.className = 'flex items-center gap-2 justify-between rounded-lg bg-white/5 border border-white/10 px-3 py-2';
+            li.innerHTML = `
+                <div class="truncate"><span class="font-semibold">${escapeHTML(item.frota)}</span> - <span class="text-white/80">${escapeHTML(item.texto)}</span></div>
+                <button class="px-2 py-1 rounded bg-white/10 hover:bg-white/20 text-sm" data-edit>Editar</button>
+            `;
+            portoLista.appendChild(li);
+            li.querySelector('[data-edit]').addEventListener('click', () => {
+                const index = portoLinhas.findIndex(f => f.frota === item.frota && f.texto === item.texto);
+                if (index !== -1) editarItemLinha('porto', li, index);
+            });
+            portoLinhas.push(item);
+        });
+        portoFinalizado = true;
+        
+        p.usina.forEach(item => {
+            const li = document.createElement('li');
+            li.className = 'flex items-center gap-2 justify-between rounded-lg bg-white/5 border border-white/10 px-3 py-2';
+            li.innerHTML = `
+                <div class="truncate"><span class="font-semibold">${escapeHTML(item.frota)}</span> - <span class="text-white/80">${escapeHTML(item.texto)}</span></div>
+                <button class="px-2 py-1 rounded bg-white/10 hover:bg-white/20 text-sm" data-edit>Editar</button>
+            `;
+            usinaLista.appendChild(li);
+            li.querySelector('[data-edit]').addEventListener('click', () => {
+                const index = usinaLinhas.findIndex(f => f.frota === item.frota && f.texto === item.texto);
+                if (index !== -1) editarItemLinha('usina', li, index);
+            });
+            usinaLinhas.push(item);
+        });
+        usinaFinalizado = true;
+        
+        modalPassagem.classList.remove('hidden');
+    }
+
+    function deletePassagem(id) {
+        const password = prompt('Para excluir, digite a senha:');
+        if (password === '1510') {
+            const arr = getPassagens().filter(x => x.id !== id);
+            savePassagens(arr);
+            renderVitrine();
+            renderHistory();
+            show(viewTurno);
+        } else {
+            alert('Senha incorreta. A exclusão foi cancelada.');
+        }
+    }
+    
+    function exportPDF(p) {
+        const element = document.getElementById('passagemDetalhe');
+        const opt = {
+            margin: 10,
+            filename: `passagem-turno-${p.id}.pdf`,
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2 },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        };
+        
+        html2pdf().set(opt).from(element).save();
+    }
+    
+    function sharePassagem(p) {
+        if (navigator.share) {
+            const textContent = `
+Passagem de Turno - ${p.turno}
+Data: ${new Date(p.dataHora).toLocaleString()}
+Supervisor: ${p.supervisor}
+Encarregado: ${p.encarregado}
+Téc. Segurança: ${p.tecnico}
+
+- - - - -
+PORTO: ${p.porto.map(item => `${item.frota} - ${item.texto}`).join('\n')}
+OBSERVAÇÃO PORTO: ${p.obs.porto}
+
+USINA: ${p.usina.map(item => `${item.frota} - ${item.texto}`).join('\n')}
+OBSERVAÇÃO USINA: ${p.obs.usina}
+
+OBSERVAÇÕES ADICIONAIS:
+Manutenção: ${p.obs.manutencao}
+Administrativo: ${p.obs.adm}
+Segurança: ${p.obs.seguranca}
+Mobilização: ${p.obs.mobilizacao}
+            `.trim();
+            
+            navigator.share({
+                title: `Passagem de Turno - ${p.turno}`,
+                text: textContent,
+            }).then(() => {
+                console.log('Compartilhado com sucesso!');
+            }).catch((error) => {
+                console.error('Erro ao compartilhar:', error);
+            });
+        } else {
+            alert('A API de compartilhamento não é suportada por este navegador. Por favor, copie o conteúdo manualmente.');
+        }
+    }
+
+
+    voltarDoTurno.addEventListener('click', () => {
+      carregarHome();
+      show(viewHome);
+    });
+
+    voltarDoDetalhe.addEventListener('click', () => {
+      show(viewTurno);
+    });
+
+    // ---------------------- Inicialização ----------------------
+    window.addEventListener('load', () => {
+      const current = getCurrent();
+      if (current) {
+        carregarHome();
+        show(viewHome);
+      } else {
+        show(viewLogin);
+      }
+    });
+  </script>
+</body>
+</html>
